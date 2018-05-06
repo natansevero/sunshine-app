@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Sunshine</string>
+    <string name="refresh_action">Refresh</string>
+    <string name="error_message">Error in loading request</string>
+</resources>
