@@ -18,7 +18,7 @@ import java.util.Scanner;
 
 public class Util {
 
-    public static final String URL_REQUEST = "https://andfun-weather.udacity.com/staticweather";
+    public static final String URL_REQUEST = "https://andfun-weather.udacity.com/weather";
     public static final String PARAMETER_QUERY = "q";
 
     public static URL buildURL(String query) {
@@ -55,12 +55,13 @@ public class Util {
         }
     }
 
-    public static List<String> makeWeatherDatas(String data) {
-        List<String> weatherData = new ArrayList<>();
+    public static String[] makeWeatherDatas(String data) {
 
         try {
             JSONObject json = new JSONObject(data);
             JSONArray list = json.getJSONArray("list");
+            int length = list.length();
+            String[] weatherData = new String[length];
 
             for(int i = 0; i < list.length(); i++) {
                 JSONObject objectList = list.getJSONObject(i);
@@ -72,7 +73,7 @@ public class Util {
                         weatherJSONObject.getString("main"),
                         weatherJSONObject.getString("description"));
 
-                weatherData.add(format);
+                weatherData[i] = format;
             }
 
             return weatherData;
@@ -81,7 +82,7 @@ public class Util {
             e.printStackTrace();
         }
 
-        return Collections.emptyList();
+        return null;
 
     }
 
