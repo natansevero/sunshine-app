@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Sunshine</string>
+
     <string name="refresh_action">Refresh</string>
+    <string name="open_map_action">Map</string>
+    <string name="share_action">Share</string>
+
     <string name="error_message">Error in loading request</string>
 </resources>

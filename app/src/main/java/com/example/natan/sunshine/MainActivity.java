@@ -1,5 +1,7 @@
 package com.example.natan.sunshine;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,14 +11,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler {
 
@@ -52,9 +52,9 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
 
     @Override
     public void onClick(String weatherDayData) {
-        if(mToast != null) mToast.cancel();
-        mToast = Toast.makeText(this, weatherDayData, Toast.LENGTH_SHORT);
-        mToast.show();
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        intent.putExtra(Intent.EXTRA_TEXT, weatherDayData);
+        startActivity(intent);
     }
 
     private void showErrorMessage() {
@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemWasSelected = item.getItemId();
+
         if(itemWasSelected == R.id.refresh_action) {
             mForecastAdapter.setmWeatherData(null);
             loadData();
@@ -120,6 +121,25 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
             return true;
         }
 
+        if(itemWasSelected == R.id.open_map_action) {
+            openMap();
+            
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openMap() {
+        String address = "1600 Ampitheatre Parkway, CA";
+        Uri uri = Uri.parse("geo:0,0?q="+address);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
+        } else {
+            Log.d("ERROR_OPEN_MAP", uri.toString() + " no app for open this intent");
+        }
     }
 }
