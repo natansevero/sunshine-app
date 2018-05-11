@@ -3,6 +3,11 @@ package com.example.natan.sunshine;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,13 +23,15 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler,
+        LoaderManager.LoaderCallbacks<String[]>{
+
+    private static final int ID_FORECAST_LOADER = 22;
 
     private RecyclerView mRecyclerView;
     private ForecastAdapter mForecastAdapter;
     private TextView mErrorMessageTextView;
     private ProgressBar mRequestLoadingProgressBar;
-    private Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +48,9 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         mForecastAdapter = new ForecastAdapter(this);
         mRecyclerView.setAdapter(mForecastAdapter);
 
-        loadData();
-    }
-
-    private void loadData() {
-        showWheatherData();
-        URL url = Util.buildURL("1600 Amphitheatre Parkway, lMountain View, CA 94043");
-        new RequestDataTask().execute(url);
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<String[]> loader = loaderManager.getLoader(ID_FORECAST_LOADER);
+        loaderManager.initLoader(ID_FORECAST_LOADER, null, this);
     }
 
     @Override
@@ -65,6 +68,65 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
     private void showWheatherData() {
         mErrorMessageTextView.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @NonNull
+    @Override
+    public Loader<String[]> onCreateLoader(int id, @Nullable Bundle args) {
+        return new AsyncTaskLoader<String[]>(this) {
+            String[] mWeatherData = null;
+
+            @Override
+            protected void onStartLoading() {
+                if(mWeatherData != null) {
+                    deliverResult(mWeatherData);
+                } else {
+                    mRequestLoadingProgressBar.setVisibility(View.VISIBLE);
+                    forceLoad();
+                }
+            }
+
+            @Nullable
+            @Override
+            public String[] loadInBackground() {
+                URL url = Util.buildURL("1600 Amphitheatre Parkway, lMountain View, CA 94043");
+
+                try {
+
+                    String response = Util.requestData(url);
+                    String[] formatedData = Util.makeWeatherDatas(response);
+
+                    return formatedData;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            public void deliverResult(@Nullable String[] data) {
+                mWeatherData = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<String[]> loader, String[] data) {
+        mRequestLoadingProgressBar.setVisibility(View.INVISIBLE);
+        if (data != null) {
+            showWheatherData();
+
+            mForecastAdapter.setmWeatherData(data);
+        } else {
+            showErrorMessage();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<String[]> loader) {
+
     }
 
     public class RequestDataTask extends AsyncTask<URL, Void, String> {
@@ -116,7 +178,8 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
 
         if(itemWasSelected == R.id.refresh_action) {
             mForecastAdapter.setmWeatherData(null);
-            loadData();
+            showWheatherData();
+            getSupportLoaderManager().restartLoader(ID_FORECAST_LOADER, null, this);
 
             return true;
         }
