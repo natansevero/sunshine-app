@@ -6,4 +6,9 @@
         android:title="@string/share_action"
         app:showAsAction="always"
         />
+
+    <item
+        android:id="@+id/settings_action"
+        android:title="@string/settings_action"
+        app:showAsAction="never"/>
 </menu>

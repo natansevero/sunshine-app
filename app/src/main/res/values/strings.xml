@@ -4,6 +4,19 @@
     <string name="refresh_action">Refresh</string>
     <string name="open_map_action">Map</string>
     <string name="share_action">Share</string>
+    <string name="settings_action">Settings</string>
+
+    <string name="pref_location_defautl" translatable="false">1600 Amphitheatre Parkway, lMountain View, CA 94043</string>
+    <string name="pref_location_key" translatable="false">location</string>
+    <string name="pref_location_label">Location</string>
+    
+    <string name="pref_units_label">Temperature Units</string>
+    <string name="pref_units_metric_label">Metric</string>
+    <string name="pref_units_imperial_label">Imperial</string>
+
+    <string name="pref_units_key" translatable="false">units</string>
+    <string name="pref_units_metric_value">metric</string>
+    <string name="pref_units_imperial_value">imperial</string>
 
     <string name="error_message">Error in loading request</string>
 </resources>

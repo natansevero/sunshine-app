@@ -13,4 +13,9 @@
         android:title="@string/open_map_action"
         app:showAsAction="never"
         />
+
+    <item
+        android:id="@+id/settings_action"
+        android:title="@string/settings_action"
+        app:showAsAction="never"/>
 </menu>
